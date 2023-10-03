@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Note struct {
 	Name      string
@@ -45,6 +48,11 @@ func (n *Note) GetName() string {
 	return n.Name + "/" + n.OtherName
 }
 
+func (n *Note) Flat() *Note {
+	idx := (n.Idx - 1 + len(Notes)) % len(Notes)
+	return Notes[idx]
+}
+
 func GetNoteIdx(name string) int {
 	for _, note := range Notes {
 		if note.Name == name || note.OtherName == name {
@@ -52,4 +60,12 @@ func GetNoteIdx(name string) int {
 		}
 	}
 	panic(fmt.Sprintf("invalid note name: %v", name))
+}
+
+func PrintNotes(notes []*Note) {
+	names := make([]string, 0, len(notes))
+	for _, note := range notes {
+		names = append(names, note.GetName())
+	}
+	fmt.Printf("Notes: %s\n", strings.Join(names, " - "))
 }

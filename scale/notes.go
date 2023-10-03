@@ -5,20 +5,22 @@ import (
 	"github.com/whichxjy/chords/model"
 )
 
-func makeNotesRow(startNote string) table.Row {
+func makeNotesRow(startNote string, functions *[]*model.Note) table.Row {
 	row := table.Row{notesRowName}
 	for i := 0; i < rowLength; i++ {
-		row = append(row, makeNote(i, model.GetNoteIdx(startNote)))
+		row = append(row, makeNote(i, model.GetNoteIdx(startNote), functions))
 	}
 	return row
 }
 
-func makeNote(idx, startIdx int) string {
+func makeNote(idx, startIdx int, functions *[]*model.Note) string {
 	if idx%2 == 1 {
 		return "   "
 	}
 	funcIdx := getFuncIdx(idx)
 	stepSum := getStepSum(funcIdx)
 	noteIdx := (startIdx + stepSum) % len(model.Notes)
-	return model.Notes[noteIdx].GetName()
+	note := model.Notes[noteIdx]
+	*functions = append(*functions, note)
+	return note.GetName()
 }

@@ -25,16 +25,18 @@ func Make(targetNote string) (string, []*model.Note) {
 	tb := table.NewWriter()
 	tb.SetColumnConfigs(makeColumnConfigs())
 
+	functions := make([]*model.Note, 0)
+
 	// Steps
 	tb.AppendRow(makeStepsRow())
 	tb.AppendSeparator()
 	// Notes
-	tb.AppendRow(makeNotesRow(targetNote))
+	tb.AppendRow(makeNotesRow(targetNote, &functions))
 	tb.AppendSeparator()
 	// Function
 	tb.AppendRow(makeFunctionRow())
 
-	return tb.Render(), nil
+	return tb.Render(), functions
 }
 
 func makeColumnConfigs() []table.ColumnConfig {

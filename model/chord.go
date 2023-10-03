@@ -1,11 +1,27 @@
 package model
 
+import "github.com/charmbracelet/bubbles/list"
+
 type ChordKind int
 
 const (
 	MajorChordKind ChordKind = iota
 	MinorChordKind
 )
+
+func (k ChordKind) String() string {
+	switch k {
+	case MajorChordKind:
+		return "Major"
+	case MinorChordKind:
+		return "Minor"
+	}
+	return "-"
+}
+
+func (k ChordKind) FilterValue() string {
+	return k.String()
+}
 
 var chords = map[ChordKind]Chord{
 	MajorChordKind: &MajorChord{},
@@ -53,4 +69,12 @@ func (c *MinorChord) Pick(functions []*Note) []*Note {
 
 func (c *MinorChord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1].Flat(), notes[2]}
+}
+
+func GetChordKindListForUI() []list.Item {
+	xs := make([]list.Item, 0, len(chords))
+	for c := range chords {
+		xs = append(xs, c)
+	}
+	return xs
 }

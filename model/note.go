@@ -2,12 +2,9 @@ package model
 
 import (
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type Note struct {
@@ -83,38 +80,7 @@ func NotesToView(notes []*Note) string {
 	return strings.Join(names, " - ")
 }
 
-var (
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
-)
-
-type NoteDelegate struct{}
-
-func (d NoteDelegate) Height() int { return 1 }
-
-func (d NoteDelegate) Spacing() int { return 0 }
-
-func (d NoteDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
-
-func (d NoteDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
-	note, ok := listItem.(*Note)
-	if !ok {
-		return
-	}
-
-	str := fmt.Sprintf("%v. %v", index+1, note.GetName())
-
-	fn := itemStyle.Render
-	if index == m.Index() {
-		fn = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
-		}
-	}
-
-	fmt.Fprint(w, fn(str))
-}
-
-func GetNotesListForUI() []list.Item {
+func GetNoteListForUI() []list.Item {
 	xs := make([]list.Item, 0, len(Notes))
 	for _, x := range Notes {
 		xs = append(xs, x)

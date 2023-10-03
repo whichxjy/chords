@@ -20,7 +20,8 @@ const (
 )
 
 type Model struct {
-	NoteList list.Model
+	noteList      list.Model
+	chordKindList list.Model
 
 	state State
 
@@ -29,7 +30,8 @@ type Model struct {
 }
 
 func (m *Model) Init() tea.Cmd {
-	m.NoteList = list.New(model.GetNotesListForUI(), model.NoteDelegate{}, 20, 14)
+	m.noteList = list.New(model.GetNoteListForUI(), noteDelegate{}, 20, 14)
+	m.chordKindList = list.New(model.GetChordKindListForUI(), chordDelegate{}, 20, 14)
 	m.state = WaitNoteState
 	return nil
 }
@@ -61,9 +63,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) View() string {
 	switch m.state {
 	case WaitNoteState:
-		return "\n" + m.NoteList.View()
+		return "\n" + m.noteList.View()
 	case WaitChordState:
-		return "\n" + m.NoteList.View()
+		return "\n" + m.chordKindList.View()
 	case ShowState:
 		var bf bytes.Buffer
 		bf.WriteString(fmt.Sprintf("%s Major Scale:\n", "C"))

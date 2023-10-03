@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/whichxjy/chords/model"
 	"github.com/whichxjy/chords/scale"
@@ -14,11 +13,8 @@ func main() {
 	table, functions := scale.Make(targetNote)
 	fmt.Println(table)
 
-	chord := &model.MinorChord{}
+	chord := &model.MajorChord{}
 	notes := getChordNotes(chord, functions)
-	sort.Slice(notes, func(i, j int) bool {
-		return notes[i].Idx < notes[j].Idx
-	})
 	fmt.Printf("Description: %v\n", chord.Description())
 	model.PrintNotes(notes)
 }

@@ -2,7 +2,12 @@ package model
 
 import (
 	"fmt"
+	"io"
 	"strings"
+
+	"github.com/charmbracelet/bubbles/list"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Note struct {
@@ -53,6 +58,10 @@ func (n *Note) Flat() *Note {
 	return Notes[idx]
 }
 
+func (n *Note) FilterValue() string {
+	return n.GetName()
+}
+
 func GetNoteIdx(name string) int {
 	for _, note := range Notes {
 		if note.Name == name || note.OtherName == name {
@@ -62,10 +71,53 @@ func GetNoteIdx(name string) int {
 	panic(fmt.Sprintf("invalid note name: %v", name))
 }
 
-func PrintNotes(notes []*Note) {
+func GetNote(name string) *Note {
+	return Notes[GetNoteIdx(name)]
+}
+
+func NotesToView(notes []*Note) string {
 	names := make([]string, 0, len(notes))
 	for _, note := range notes {
 		names = append(names, note.GetName())
 	}
-	fmt.Printf("Notes: %s\n", strings.Join(names, " - "))
+	return strings.Join(names, " - ")
+}
+
+var (
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+)
+
+type NoteDelegate struct{}
+
+func (d NoteDelegate) Height() int { return 1 }
+
+func (d NoteDelegate) Spacing() int { return 0 }
+
+func (d NoteDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+
+func (d NoteDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+	note, ok := listItem.(*Note)
+	if !ok {
+		return
+	}
+
+	str := fmt.Sprintf("%v. %v", index+1, note.GetName())
+
+	fn := itemStyle.Render
+	if index == m.Index() {
+		fn = func(s ...string) string {
+			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+		}
+	}
+
+	fmt.Fprint(w, fn(str))
+}
+
+func GetNotesListForUI() []list.Item {
+	xs := make([]list.Item, 0, len(Notes))
+	for _, x := range Notes {
+		xs = append(xs, x)
+	}
+	return xs
 }

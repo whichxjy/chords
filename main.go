@@ -2,24 +2,15 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/whichxjy/chords/model"
-	"github.com/whichxjy/chords/scale"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/whichxjy/chords/ui"
 )
 
 func main() {
-	targetNote := "C"
-	fmt.Printf("%s Major Scale:\n", targetNote)
-	table, functions := scale.Make(targetNote)
-	fmt.Println(table)
-
-	chord := &model.MajorChord{}
-	notes := getChordNotes(chord, functions)
-	fmt.Printf("Description: %v\n", chord.Description())
-	model.PrintNotes(notes)
-}
-
-func getChordNotes(chord model.Chord, functions []*model.Note) []*model.Note {
-	notes := chord.Pick(functions)
-	return chord.Convert(notes)
+	if _, err := tea.NewProgram(&ui.Model{}).Run(); err != nil {
+		fmt.Printf("Error running program: %v\n", err)
+		os.Exit(1)
+	}
 }

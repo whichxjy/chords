@@ -1,5 +1,26 @@
 package model
 
+type ChordKind int
+
+const (
+	MajorChordKind ChordKind = iota
+	MinorChordKind
+)
+
+var chords = map[ChordKind]Chord{
+	MajorChordKind: &MajorChord{},
+	MinorChordKind: &MinorChord{},
+}
+
+func GetChord(kind ChordKind) Chord {
+	return chords[kind]
+}
+
+func GetChordNotes(chord Chord, functions []*Note) []*Note {
+	notes := chord.Pick(functions)
+	return chord.Convert(notes)
+}
+
 type Chord interface {
 	Description() string
 	Pick(functions []*Note) []*Note

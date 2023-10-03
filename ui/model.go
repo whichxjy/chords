@@ -23,10 +23,11 @@ type Model struct {
 	noteList      list.Model
 	chordKindList list.Model
 
-	state State
+	state  State
+	cursor int
 
-	note      *model.Note
-	chordKind model.ChordKind
+	selectedNote      *model.Note
+	selectedChordKind model.ChordKind
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -45,14 +46,35 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "1":
 			switch m.state {
 			case WaitNoteState:
-				m.note = model.GetNote("C")
+				m.selectedNote = model.GetNote("C")
 				m.state = WaitChordState
 			case WaitChordState:
-				m.chordKind = model.MajorChordKind
+				m.selectedChordKind = model.MajorChordKind
 				m.state = ShowState
 			}
+		case "up":
+			switch m.state {
+			case WaitNoteState:
+				m.noteList.CursorUp()
+			case WaitChordState:
+				m.chordKindList.CursorUp()
+			}
+		case "down":
+			switch m.state {
+			case WaitNoteState:
+				m.noteList.CursorDown()
+			case WaitChordState:
+				m.chordKindList.CursorDown()
+			}
 		case "enter":
-			if m.state == ShowState {
+			switch m.state {
+			case WaitNoteState:
+				m.selectedNote = m.noteList.SelectedItem().(*model.Note)
+				m.state = WaitChordState
+			case WaitChordState:
+				m.selectedChordKind = m.chordKindList.SelectedItem().(model.ChordKind)
+				m.state = ShowState
+			case ShowState:
 				m.state = WaitNoteState
 			}
 		}
@@ -68,13 +90,15 @@ func (m *Model) View() string {
 		return "\n" + m.chordKindList.View()
 	case ShowState:
 		var bf bytes.Buffer
-		bf.WriteString(fmt.Sprintf("%s Major Scale:\n", "C"))
-		table, functions := scale.Make("C")
-		chord := model.GetChord(m.chordKind)
+		bf.WriteString(fmt.Sprintf("%s Major Scale:\n", m.selectedNote.GetName()))
+		table, functions := scale.Make(m.selectedNote)
+		chord := model.GetChord(m.selectedChordKind)
 		notes := model.GetChordNotes(chord, functions)
 		bf.WriteString(table)
-		bf.WriteString("\n")
-		bf.WriteString(model.NotesToView(notes))
+		bf.WriteString("\n\n")
+		bf.WriteString(fmt.Sprintf("Name: %v\n", chord.GetSymbol(m.selectedNote)))
+		bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
+		bf.WriteString(fmt.Sprintf("Notes: %v\n", model.NotesToView(notes)))
 		return bf.String()
 	}
 	return ""

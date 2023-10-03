@@ -61,7 +61,7 @@ func (n *Note) FilterValue() string {
 
 func GetNoteIdx(name string) int {
 	for _, note := range Notes {
-		if note.Name == name || note.OtherName == name {
+		if note.Name == name || note.OtherName == name || note.GetName() == name {
 			return note.Idx
 		}
 	}

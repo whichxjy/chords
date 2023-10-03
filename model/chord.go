@@ -38,12 +38,17 @@ func GetChordNotes(chord Chord, functions []*Note) []*Note {
 }
 
 type Chord interface {
+	GetSymbol(note *Note) string
 	Description() string
 	Pick(functions []*Note) []*Note
 	Convert(notes []*Note) []*Note
 }
 
 type MajorChord struct{}
+
+func (c *MajorChord) GetSymbol(note *Note) string {
+	return note.GetName()
+}
 
 func (c *MajorChord) Description() string {
 	return "1 - 3 - 5"
@@ -58,6 +63,10 @@ func (c *MajorChord) Convert(notes []*Note) []*Note {
 }
 
 type MinorChord struct{}
+
+func (c *MinorChord) GetSymbol(note *Note) string {
+	return note.GetName() + "m"
+}
 
 func (c *MinorChord) Description() string {
 	return "1 - 3b - 5"

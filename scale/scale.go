@@ -21,7 +21,7 @@ var steps = []int{2, 2, 1, 2, 2, 2, 1}
 // Result:
 // 1. Rendered major scale table in string
 // 2. Function map (function => note)
-func Make(targetNote string) (string, []*model.Note) {
+func Make(targetNote *model.Note) (string, []*model.Note) {
 	tb := table.NewWriter()
 	tb.SetColumnConfigs(makeColumnConfigs())
 

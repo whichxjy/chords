@@ -6,6 +6,7 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/whichxjy/chords/model"
 	"github.com/whichxjy/chords/utils"
 )
 
@@ -18,51 +19,7 @@ const (
 	functionRowName = "Function"
 )
 
-type Note struct {
-	Name      string
-	OtherName string
-	Idx       int
-}
-
-var (
-	notes = []*Note{
-		newNote(0, "C"),
-		newNote(1, "C#", "Db"),
-		newNote(2, "D"),
-		newNote(3, "D#", "Eb"),
-		newNote(4, "E"),
-		newNote(5, "F"),
-		newNote(6, "F#", "Gb"),
-		newNote(7, "G"),
-		newNote(8, "G#", "Ab"),
-		newNote(9, "A"),
-		newNote(10, "A#", "Bb"),
-		newNote(11, "B"),
-	}
-	steps = []int{2, 2, 1, 2, 2, 2, 1}
-)
-
-func newNote(idx int, names ...string) *Note {
-	nameNum := len(names)
-	if nameNum < 1 || nameNum > 2 {
-		panic("invalid name number")
-	}
-	n := &Note{
-		Idx:  idx,
-		Name: names[0],
-	}
-	if nameNum == 2 {
-		n.OtherName = names[1]
-	}
-	return n
-}
-
-func (n *Note) GetName() string {
-	if n.OtherName == "" {
-		return n.Name
-	}
-	return n.Name + "/" + n.OtherName
-}
+var steps = []int{2, 2, 1, 2, 2, 2, 1}
 
 func main() {
 	symbol := "C"
@@ -123,7 +80,7 @@ func makeStep(idx int) string {
 func makeNotesRow(startNote string) table.Row {
 	row := table.Row{notesRowName}
 	for i := 0; i < rowLength; i++ {
-		row = append(row, makeNote(i, getNoteIdx(startNote)))
+		row = append(row, makeNote(i, model.GetNoteIdx(startNote)))
 	}
 	return row
 }
@@ -134,8 +91,8 @@ func makeNote(idx, startIdx int) string {
 	}
 	funcIdx := getFuncIdx(idx)
 	stepSum := getStepSum(funcIdx)
-	nodeIdx := (startIdx + stepSum) % len(notes)
-	return notes[nodeIdx].GetName()
+	nodeIdx := (startIdx + stepSum) % len(model.Notes)
+	return model.Notes[nodeIdx].GetName()
 }
 
 func makeFunctionRow() table.Row {
@@ -167,13 +124,4 @@ func getStepSum(targetFuncIdx int) int {
 		return 0
 	}
 	return utils.IntSliceSum(steps[:targetFuncIdx-1])
-}
-
-func getNoteIdx(targetNote string) int {
-	for _, note := range notes {
-		if note.Name == targetNote || note.OtherName == targetNote {
-			return note.Idx
-		}
-	}
-	return -1
 }

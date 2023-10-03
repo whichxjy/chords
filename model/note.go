@@ -51,5 +51,5 @@ func GetNoteIdx(name string) int {
 			return note.Idx
 		}
 	}
-	panic(fmt.Sprintf("invalid node name: %v", name))
+	panic(fmt.Sprintf("invalid note name: %v", name))
 }

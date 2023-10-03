@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -20,6 +21,25 @@ var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
 )
+
+func getNoteListForUI() []list.Item {
+	xs := make([]list.Item, 0, len(model.Notes))
+	for _, x := range model.Notes {
+		xs = append(xs, x)
+	}
+	return xs
+}
+
+func getChordKindListForUI() []list.Item {
+	xs := make([]list.Item, 0, len(model.Chords))
+	for c := range model.Chords {
+		xs = append(xs, c)
+	}
+	sort.Slice(xs, func(i, j int) bool {
+		return xs[i].(model.ChordKind) < xs[j].(model.ChordKind)
+	})
+	return xs
+}
 
 type listDelegate struct{}
 

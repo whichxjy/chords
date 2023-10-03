@@ -1,7 +1,5 @@
 package model
 
-import "github.com/charmbracelet/bubbles/list"
-
 type ChordKind int
 
 const (
@@ -23,13 +21,13 @@ func (k ChordKind) FilterValue() string {
 	return k.String()
 }
 
-var chords = map[ChordKind]Chord{
+var Chords = map[ChordKind]Chord{
 	MajorChordKind: &MajorChord{},
 	MinorChordKind: &MinorChord{},
 }
 
 func GetChord(kind ChordKind) Chord {
-	return chords[kind]
+	return Chords[kind]
 }
 
 func GetChordNotes(chord Chord, functions []*Note) []*Note {
@@ -78,12 +76,4 @@ func (c *MinorChord) Pick(functions []*Note) []*Note {
 
 func (c *MinorChord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1].Flat(), notes[2]}
-}
-
-func GetChordKindListForUI() []list.Item {
-	xs := make([]list.Item, 0, len(chords))
-	for c := range chords {
-		xs = append(xs, c)
-	}
-	return xs
 }

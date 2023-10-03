@@ -1,11 +1,5 @@
 package model
 
-import (
-	"strings"
-
-	"github.com/charmbracelet/bubbles/list"
-)
-
 type Note struct {
 	Name      string
 	OtherName string
@@ -56,20 +50,4 @@ func (n *Note) Flat() *Note {
 
 func (n *Note) FilterValue() string {
 	return n.GetName()
-}
-
-func NotesToView(notes []*Note) string {
-	names := make([]string, 0, len(notes))
-	for _, note := range notes {
-		names = append(names, note.GetName())
-	}
-	return strings.Join(names, " - ")
-}
-
-func GetNoteListForUI() []list.Item {
-	xs := make([]list.Item, 0, len(Notes))
-	for _, x := range Notes {
-		xs = append(xs, x)
-	}
-	return xs
 }

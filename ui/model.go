@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -31,8 +32,8 @@ type Model struct {
 }
 
 func (m *Model) Init() tea.Cmd {
-	m.noteList = list.New(model.GetNoteListForUI(), noteDelegate{}, listWidth, listHeight)
-	m.chordKindList = list.New(model.GetChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
+	m.noteList = list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
+	m.chordKindList = list.New(getChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
 	m.state = WaitNoteState
 	return nil
 }
@@ -99,6 +100,14 @@ func (m *Model) getChordView() string {
 	bf.WriteString("\n\n")
 	bf.WriteString(fmt.Sprintf("Symbol: %v\n", chord.GetSymbol(m.selectedNote)))
 	bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
-	bf.WriteString(fmt.Sprintf("Notes: %v\n", model.NotesToView(notes)))
+	bf.WriteString(fmt.Sprintf("Notes: %v\n", notesToView(notes)))
 	return bf.String()
+}
+
+func notesToView(notes []*model.Note) string {
+	names := make([]string, 0, len(notes))
+	for _, note := range notes {
+		names = append(names, note.GetName())
+	}
+	return strings.Join(names, " - ")
 }

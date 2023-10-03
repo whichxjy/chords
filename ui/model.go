@@ -31,8 +31,8 @@ type Model struct {
 }
 
 func (m *Model) Init() tea.Cmd {
-	m.noteList = list.New(model.GetNoteListForUI(), noteDelegate{}, 20, 14)
-	m.chordKindList = list.New(model.GetChordKindListForUI(), chordDelegate{}, 20, 14)
+	m.noteList = list.New(model.GetNoteListForUI(), noteDelegate{}, listWidth, listHeight)
+	m.chordKindList = list.New(model.GetChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
 	m.state = WaitNoteState
 	return nil
 }
@@ -43,15 +43,6 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch keypress := msg.String(); keypress {
 		case "ctrl+c":
 			return m, tea.Quit
-		case "1":
-			switch m.state {
-			case WaitNoteState:
-				m.selectedNote = model.GetNote("C")
-				m.state = WaitChordState
-			case WaitChordState:
-				m.selectedChordKind = model.MajorChordKind
-				m.state = ShowState
-			}
 		case "up":
 			switch m.state {
 			case WaitNoteState:
@@ -78,6 +69,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.state = WaitNoteState
 			}
 		}
+	case tea.WindowSizeMsg:
+		m.noteList.SetWidth(msg.Width)
+		m.chordKindList.SetWidth(msg.Width)
+		return m, nil
 	}
 	return m, nil
 }
@@ -85,21 +80,25 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) View() string {
 	switch m.state {
 	case WaitNoteState:
-		return "\n" + m.noteList.View()
+		return m.noteList.View()
 	case WaitChordState:
-		return "\n" + m.chordKindList.View()
+		return m.chordKindList.View()
 	case ShowState:
-		var bf bytes.Buffer
-		bf.WriteString(fmt.Sprintf("%s Major Scale:\n", m.selectedNote.GetName()))
-		table, functions := scale.Make(m.selectedNote)
-		chord := model.GetChord(m.selectedChordKind)
-		notes := model.GetChordNotes(chord, functions)
-		bf.WriteString(table)
-		bf.WriteString("\n\n")
-		bf.WriteString(fmt.Sprintf("Name: %v\n", chord.GetSymbol(m.selectedNote)))
-		bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
-		bf.WriteString(fmt.Sprintf("Notes: %v\n", model.NotesToView(notes)))
-		return bf.String()
+		return m.getChordView()
 	}
 	return ""
+}
+
+func (m *Model) getChordView() string {
+	var bf bytes.Buffer
+	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", m.selectedNote.GetName()))
+	table, functions := scale.Make(m.selectedNote)
+	chord := model.GetChord(m.selectedChordKind)
+	notes := model.GetChordNotes(chord, functions)
+	bf.WriteString(table)
+	bf.WriteString("\n\n")
+	bf.WriteString(fmt.Sprintf("Symbol: %v\n", chord.GetSymbol(m.selectedNote)))
+	bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
+	bf.WriteString(fmt.Sprintf("Notes: %v\n", model.NotesToView(notes)))
+	return bf.String()
 }

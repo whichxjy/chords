@@ -8,7 +8,7 @@ import (
 func makeNotesRow(startNote *model.Note, functions *[]*model.Note) table.Row {
 	row := table.Row{notesRowName}
 	for i := 0; i < rowLength; i++ {
-		row = append(row, makeNote(i, model.GetNoteIdx(startNote.GetName()), functions))
+		row = append(row, makeNote(i, startNote.Idx, functions))
 	}
 	return row
 }

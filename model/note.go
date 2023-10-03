@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -57,19 +56,6 @@ func (n *Note) Flat() *Note {
 
 func (n *Note) FilterValue() string {
 	return n.GetName()
-}
-
-func GetNoteIdx(name string) int {
-	for _, note := range Notes {
-		if note.Name == name || note.OtherName == name || note.GetName() == name {
-			return note.Idx
-		}
-	}
-	panic(fmt.Sprintf("invalid note name: %v", name))
-}
-
-func GetNote(name string) *Note {
-	return Notes[GetNoteIdx(name)]
 }
 
 func NotesToView(notes []*Note) string {

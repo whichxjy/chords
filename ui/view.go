@@ -11,6 +11,11 @@ import (
 	"github.com/whichxjy/chords/model"
 )
 
+const (
+	listWidth  int = 20
+	listHeight int = 14
+)
+
 var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))

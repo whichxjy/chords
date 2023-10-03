@@ -6,6 +6,7 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/whichxjy/chords/utils"
 )
 
 const (
@@ -17,10 +18,51 @@ const (
 	functionRowName = "Function"
 )
 
+type Note struct {
+	Name      string
+	OtherName string
+	Idx       int
+}
+
 var (
-	notes = []string{"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}
+	notes = []*Note{
+		newNote(0, "C"),
+		newNote(1, "C#", "Db"),
+		newNote(2, "D"),
+		newNote(3, "D#", "Eb"),
+		newNote(4, "E"),
+		newNote(5, "F"),
+		newNote(6, "F#", "Gb"),
+		newNote(7, "G"),
+		newNote(8, "G#", "Ab"),
+		newNote(9, "A"),
+		newNote(10, "A#", "Bb"),
+		newNote(11, "B"),
+	}
 	steps = []int{2, 2, 1, 2, 2, 2, 1}
 )
+
+func newNote(idx int, names ...string) *Note {
+	nameNum := len(names)
+	if nameNum < 1 || nameNum > 2 {
+		panic("invalid name number")
+	}
+	n := &Note{
+		Idx:  idx,
+		Name: names[0],
+	}
+	if nameNum == 2 {
+		n.OtherName = names[1]
+	}
+	return n
+}
+
+func (n *Note) GetName() string {
+	if n.OtherName == "" {
+		return n.Name
+	}
+	return n.Name + "/" + n.OtherName
+}
 
 func main() {
 	symbol := "C"
@@ -93,7 +135,7 @@ func makeNote(idx, startIdx int) string {
 	funcIdx := getFuncIdx(idx)
 	stepSum := getStepSum(funcIdx)
 	nodeIdx := (startIdx + stepSum) % len(notes)
-	return notes[nodeIdx]
+	return notes[nodeIdx].GetName()
 }
 
 func makeFunctionRow() table.Row {
@@ -124,21 +166,13 @@ func getStepSum(targetFuncIdx int) int {
 	if targetFuncIdx == 1 {
 		return 0
 	}
-	return intSliceSum(steps[:targetFuncIdx-1])
-}
-
-func intSliceSum(xs []int) int {
-	sum := 0
-	for i := 0; i < len(xs); i++ {
-		sum += xs[i]
-	}
-	return sum
+	return utils.IntSliceSum(steps[:targetFuncIdx-1])
 }
 
 func getNoteIdx(targetNote string) int {
-	for i, note := range notes {
-		if note == targetNote {
-			return i
+	for _, note := range notes {
+		if note.Name == targetNote || note.OtherName == targetNote {
+			return note.Idx
 		}
 	}
 	return -1

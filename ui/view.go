@@ -17,17 +17,20 @@ const (
 )
 
 var (
+	// Colors
+	backgroundColor = lipgloss.Color("#107896")
+	foregroundColor = lipgloss.Color("#FAFAFA")
 	// List
 	notSelectedStyle = lipgloss.NewStyle().
 				PaddingLeft(4)
 	selectedStyle = lipgloss.NewStyle().
 			PaddingLeft(2).
-			Foreground(lipgloss.Color("#107896"))
+			Foreground(backgroundColor)
 	// Display
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.Color("#FAFAFA")).
-			Background(lipgloss.Color("#107896"))
+			Foreground(foregroundColor).
+			Background(backgroundColor)
 	infoStyle = titleStyle.Copy()
 )
 
@@ -46,6 +49,10 @@ func getChordKindListForUI() []list.Item {
 		xs = append(xs, chordKind)
 	}
 	return xs
+}
+
+func setListStyle(l list.Model) {
+	l.Styles.Title = l.Styles.Title.Background(backgroundColor)
 }
 
 type listDelegate struct{}

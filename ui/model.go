@@ -46,8 +46,17 @@ type Model struct {
 }
 
 func (m *Model) Init() tea.Cmd {
+	// Init note list
 	m.noteList = list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
+	m.noteList.Title = "Choose the tonic"
+	setListStyle(m.noteList)
+
+	// Init chord kind list
 	m.chordKindList = list.New(getChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
+	m.chordKindList.Title = "Choose the chord"
+	setListStyle(m.chordKindList)
+
+	// Init state
 	m.state = WaitNoteState
 	return nil
 }

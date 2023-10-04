@@ -7,9 +7,10 @@ const (
 	MinorChordKind
 	Sus2ChordKind
 	Sus4ChordKind
-	MajorSeventhKind
-	DominantSeventhKind
-	MinorSeventhKind
+	MajorSeventhChordKind
+	DominantSeventhChordKind
+	MinorSeventhChordKind
+	MinorMajorSeventhChordKind
 )
 
 func (k ChordKind) String() string {
@@ -22,12 +23,14 @@ func (k ChordKind) String() string {
 		return "Sus2"
 	case Sus4ChordKind:
 		return "Sus4"
-	case MajorSeventhKind:
+	case MajorSeventhChordKind:
 		return "Major Seventh"
-	case DominantSeventhKind:
+	case DominantSeventhChordKind:
 		return "Dominant Seventh"
-	case MinorSeventhKind:
+	case MinorSeventhChordKind:
 		return "Minor Seventh"
+	case MinorMajorSeventhChordKind:
+		return "Minor Major Seventh"
 	}
 	return "-"
 }
@@ -37,13 +40,14 @@ func (k ChordKind) FilterValue() string {
 }
 
 var Chords = map[ChordKind]Chord{
-	MajorChordKind:      &MajorChord{},
-	MinorChordKind:      &MinorChord{},
-	Sus2ChordKind:       &Sus2Chord{},
-	Sus4ChordKind:       &Sus4Chord{},
-	MajorSeventhKind:    &MajorSeventhChord{},
-	DominantSeventhKind: &DominantSeventhChord{},
-	MinorSeventhKind:    &MinorSeventhChord{},
+	MajorChordKind:             &MajorChord{},
+	MinorChordKind:             &MinorChord{},
+	Sus2ChordKind:              &Sus2Chord{},
+	Sus4ChordKind:              &Sus4Chord{},
+	MajorSeventhChordKind:      &MajorSeventhChord{},
+	DominantSeventhChordKind:   &DominantSeventhChord{},
+	MinorSeventhChordKind:      &MinorSeventhChord{},
+	MinorMajorSeventhChordKind: &MinorMajorSeventhChord{},
 }
 
 func GetChord(kind ChordKind) Chord {
@@ -186,4 +190,22 @@ func (c *MinorSeventhChord) Pick(functions []*Note) []*Note {
 
 func (c *MinorSeventhChord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1].Flat(), notes[2], notes[3].Flat()}
+}
+
+type MinorMajorSeventhChord struct{}
+
+func (c *MinorMajorSeventhChord) GetSymbol(note *Note) string {
+	return note.GetName() + "m(maj7)"
+}
+
+func (c *MinorMajorSeventhChord) Description() string {
+	return "1 - b3 - 5 - 7"
+}
+
+func (c *MinorMajorSeventhChord) Pick(functions []*Note) []*Note {
+	return []*Note{functions[0], functions[2], functions[4], functions[6]}
+}
+
+func (c *MinorMajorSeventhChord) Convert(notes []*Note) []*Note {
+	return []*Note{notes[0], notes[1].Flat(), notes[2], notes[3]}
 }

@@ -22,5 +22,5 @@ func makeNote(idx, startIdx int, functions *[]*model.Note) string {
 	noteIdx := (startIdx + stepSum) % len(model.Notes)
 	note := model.Notes[noteIdx]
 	*functions = append(*functions, note)
-	return note.GetName()
+	return note.FullName()
 }

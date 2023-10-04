@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	listWidth  int = 20
+	listWidth  int = 40
 	listHeight int = 14
 )
 
@@ -37,15 +37,18 @@ var (
 func newNoteList() list.Model {
 	noteList := list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
 	noteList.Title = "Choose the tonic"
-	setListStyle(noteList)
+	setListStyle(&noteList)
 	return noteList
 }
 
 func newChordKindList() list.Model {
 	chordKindList := list.New(getChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
-	chordKindList.Title = "Choose the chord"
-	setListStyle(chordKindList)
+	setListStyle(&chordKindList)
 	return chordKindList
+}
+
+func setChordKindListTitle(l *list.Model, tonic *model.Note) {
+	l.Title = fmt.Sprintf("Choose the chord for tonic %v", tonic.FullName())
 }
 
 func getNoteListForUI() []list.Item {
@@ -65,7 +68,7 @@ func getChordKindListForUI() []list.Item {
 	return xs
 }
 
-func setListStyle(l list.Model) {
+func setListStyle(l *list.Model) {
 	l.Styles.Title = l.Styles.Title.Background(backgroundColor)
 }
 
@@ -87,7 +90,7 @@ func (nd noteDelegate) Render(w io.Writer, m list.Model, index int, listItem lis
 		return
 	}
 
-	str := fmt.Sprintf("[%02d] %v", index+1, note.GetName())
+	str := fmt.Sprintf("[%02d] %v", index+1, note.FullName())
 
 	fn := notSelectedStyle.Render
 	if index == m.Index() {

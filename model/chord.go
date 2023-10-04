@@ -90,7 +90,7 @@ type Chord interface {
 type MajorChord struct{}
 
 func (c *MajorChord) GetSymbol(note *Note) string {
-	return note.GetName()
+	return note.FullName()
 }
 
 func (c *MajorChord) Description() string {
@@ -108,7 +108,7 @@ func (c *MajorChord) Convert(notes []*Note) []*Note {
 type MinorChord struct{}
 
 func (c *MinorChord) GetSymbol(note *Note) string {
-	return note.GetName() + "m"
+	return note.FullName() + "m"
 }
 
 func (c *MinorChord) Description() string {
@@ -126,7 +126,7 @@ func (c *MinorChord) Convert(notes []*Note) []*Note {
 type Sus2Chord struct{}
 
 func (c *Sus2Chord) GetSymbol(note *Note) string {
-	return note.GetName() + "sus2"
+	return note.FullName() + "sus2"
 }
 
 func (c *Sus2Chord) Description() string {
@@ -144,7 +144,7 @@ func (c *Sus2Chord) Convert(notes []*Note) []*Note {
 type Sus4Chord struct{}
 
 func (c *Sus4Chord) GetSymbol(note *Note) string {
-	return note.GetName() + "sus4"
+	return note.FullName() + "sus4"
 }
 
 func (c *Sus4Chord) Description() string {
@@ -162,7 +162,7 @@ func (c *Sus4Chord) Convert(notes []*Note) []*Note {
 type MajorSeventhChord struct{}
 
 func (c *MajorSeventhChord) GetSymbol(note *Note) string {
-	return note.GetName() + "maj7"
+	return note.FullName() + "maj7"
 }
 
 func (c *MajorSeventhChord) Description() string {
@@ -180,7 +180,7 @@ func (c *MajorSeventhChord) Convert(notes []*Note) []*Note {
 type DominantSeventhChord struct{}
 
 func (c *DominantSeventhChord) GetSymbol(note *Note) string {
-	return note.GetName() + "7"
+	return note.FullName() + "7"
 }
 
 func (c *DominantSeventhChord) Description() string {
@@ -198,7 +198,7 @@ func (c *DominantSeventhChord) Convert(notes []*Note) []*Note {
 type MinorSeventhChord struct{}
 
 func (c *MinorSeventhChord) GetSymbol(note *Note) string {
-	return note.GetName() + "m7"
+	return note.FullName() + "m7"
 }
 
 func (c *MinorSeventhChord) Description() string {
@@ -216,7 +216,7 @@ func (c *MinorSeventhChord) Convert(notes []*Note) []*Note {
 type MinorMajorSeventhChord struct{}
 
 func (c *MinorMajorSeventhChord) GetSymbol(note *Note) string {
-	return note.GetName() + "m(maj7)"
+	return note.FullName() + "m(maj7)"
 }
 
 func (c *MinorMajorSeventhChord) Description() string {
@@ -234,7 +234,7 @@ func (c *MinorMajorSeventhChord) Convert(notes []*Note) []*Note {
 type HalfDiminishedSeventhChord struct{}
 
 func (c *HalfDiminishedSeventhChord) GetSymbol(note *Note) string {
-	return note.GetName() + "m7b5"
+	return note.FullName() + "m7b5"
 }
 
 func (c *HalfDiminishedSeventhChord) Description() string {

@@ -36,7 +36,7 @@ func newNote(idx int, names ...string) *Note {
 	return n
 }
 
-func (n *Note) GetName() string {
+func (n *Note) FullName() string {
 	if n.OtherName == "" {
 		return n.Name
 	}
@@ -49,7 +49,7 @@ func (n *Note) Flat() *Note {
 }
 
 func (n *Note) FilterValue() string {
-	return n.GetName()
+	return n.FullName()
 }
 
 func GetNotesInterval(startNote, endNote *Note) float32 {

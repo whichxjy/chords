@@ -79,6 +79,7 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 			m.noteList.CursorDown()
 		case KeyEnter:
 			m.selectedNote = m.noteList.SelectedItem().(*model.Note)
+			m.onTonicSelected(m.selectedNote)
 			m.state = WaitChordState
 		}
 	case WaitChordState:
@@ -145,6 +146,10 @@ func (m *Model) View() string {
 	return ""
 }
 
+func (m *Model) onTonicSelected(tonic *model.Note) {
+	setChordKindListTitle(&m.chordKindList, tonic)
+}
+
 func (m *Model) headerView() string {
 	return titleStyle.Render("🎹" + m.headerText)
 }
@@ -178,7 +183,7 @@ func getSingleChordView(tonic *model.Note, chordKind model.ChordKind) string {
 func getScaleTableView(tonic *model.Note) (string, []*model.Note) {
 	var bf bytes.Buffer
 	table, functions := scale.Make(tonic)
-	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", tonic.GetName()))
+	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", tonic.FullName()))
 	bf.WriteString(table)
 	return bf.String(), functions
 }
@@ -197,7 +202,7 @@ func getChordDetailView(tonic *model.Note, chordKind model.ChordKind, functions 
 func notesToView(notes []*model.Note) string {
 	names := make([]string, 0, len(notes))
 	for _, note := range notes {
-		names = append(names, note.GetName())
+		names = append(names, note.FullName())
 	}
 	return strings.Join(names, " - ")
 }
@@ -207,11 +212,11 @@ func notesWithIntervalToView(notes []*model.Note) string {
 	for i := 0; i < len(notes); i++ {
 		currNote := notes[i]
 		if i == 0 {
-			strs = append(strs, currNote.GetName())
+			strs = append(strs, currNote.FullName())
 		} else {
 			interval := model.GetNotesInterval(notes[i-1], currNote)
 			strs = append(strs, fmt.Sprintf("[%v]", interval))
-			strs = append(strs, currNote.GetName())
+			strs = append(strs, currNote.FullName())
 		}
 	}
 	return strings.Join(strs, " - ")

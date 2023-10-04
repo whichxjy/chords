@@ -59,7 +59,7 @@ func (nd noteDelegate) Render(w io.Writer, m list.Model, index int, listItem lis
 		return
 	}
 
-	str := fmt.Sprintf("%v. %v", index+1, note.GetName())
+	str := fmt.Sprintf("[%02d] %v", index+1, note.GetName())
 
 	fn := itemStyle.Render
 	if index == m.Index() {
@@ -81,7 +81,7 @@ func (cd chordDelegate) Render(w io.Writer, m list.Model, index int, listItem li
 		return
 	}
 
-	str := fmt.Sprintf("%v. %v", index+1, chordKind.String())
+	str := fmt.Sprintf("[%02d] %v", index+1, chordKind.String())
 
 	fn := itemStyle.Render
 	if index == m.Index() {

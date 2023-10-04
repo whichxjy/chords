@@ -67,7 +67,7 @@ func (c *MinorChord) GetSymbol(note *Note) string {
 }
 
 func (c *MinorChord) Description() string {
-	return "1 - 3b - 5"
+	return "1 - b3 - 5"
 }
 
 func (c *MinorChord) Pick(functions []*Note) []*Note {

@@ -68,6 +68,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.state = ShowState
 			case ShowState:
 				m.state = WaitNoteState
+				m.noteList.ResetSelected()
+				m.chordKindList.ResetSelected()
 			}
 		}
 	case tea.WindowSizeMsg:
@@ -101,6 +103,7 @@ func (m *Model) getChordView() string {
 	bf.WriteString(fmt.Sprintf("Symbol: %v\n", chord.GetSymbol(m.selectedNote)))
 	bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
 	bf.WriteString(fmt.Sprintf("Notes: %v\n", notesToView(notes)))
+	bf.WriteString(fmt.Sprintf("Intervals: %v\n", notesWithIntervalToView(notes)))
 	return bf.String()
 }
 
@@ -110,4 +113,19 @@ func notesToView(notes []*model.Note) string {
 		names = append(names, note.GetName())
 	}
 	return strings.Join(names, " - ")
+}
+
+func notesWithIntervalToView(notes []*model.Note) string {
+	strs := make([]string, 0, len(notes))
+	for i := 0; i < len(notes); i++ {
+		currNote := notes[i]
+		if i == 0 {
+			strs = append(strs, currNote.GetName())
+		} else {
+			interval := model.GetNotesInterval(notes[i-1], currNote)
+			strs = append(strs, fmt.Sprintf("[%v]", interval))
+			strs = append(strs, currNote.GetName())
+		}
+	}
+	return strings.Join(strs, " - ")
 }

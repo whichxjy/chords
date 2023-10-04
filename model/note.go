@@ -51,3 +51,8 @@ func (n *Note) Flat() *Note {
 func (n *Note) FilterValue() string {
 	return n.GetName()
 }
+
+func GetNotesInterval(startNote, endNote *Note) float32 {
+	idxInterval := (endNote.Idx - startNote.Idx + len(Notes)) % len(Notes)
+	return float32(idxInterval) / 2
+}

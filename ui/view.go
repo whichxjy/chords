@@ -23,12 +23,12 @@ var (
 				PaddingLeft(4)
 	selectedStyle = lipgloss.NewStyle().
 			PaddingLeft(2).
-			Foreground(lipgloss.Color("170"))
+			Foreground(lipgloss.Color("#107896"))
 	// Display
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.Color("#FAFAFA")).
-			Background(lipgloss.Color("#7D56F4"))
+			Background(lipgloss.Color("#107896"))
 	infoStyle = titleStyle.Copy()
 )
 

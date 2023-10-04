@@ -36,7 +36,7 @@ var (
 
 func newNoteList() list.Model {
 	noteList := list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
-	noteList.Title = "Choose the tonic"
+	noteList.Title = "🎹Choose the tonic"
 	setListStyle(&noteList)
 	return noteList
 }
@@ -48,7 +48,7 @@ func newChordKindList() list.Model {
 }
 
 func setChordKindListTitle(l *list.Model, tonic *model.Note) {
-	l.Title = fmt.Sprintf("Choose the chord for tonic %v", tonic.FullName())
+	l.Title = fmt.Sprintf("🎹Choose the chord for tonic %v", tonic.FullName())
 }
 
 func getNoteListForUI() []list.Item {

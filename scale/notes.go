@@ -5,10 +5,10 @@ import (
 	"github.com/whichxjy/chords/model"
 )
 
-func makeNotesRow(startNote *model.Note, functions *[]*model.Note) table.Row {
+func makeNotesRow(tonic *model.Note, functions *[]*model.Note) table.Row {
 	row := table.Row{notesRowName}
 	for i := 0; i < rowLength; i++ {
-		row = append(row, makeNote(i, startNote.Idx, functions))
+		row = append(row, makeNote(i, tonic.Idx, functions))
 	}
 	return row
 }

@@ -87,20 +87,20 @@ func (m *Model) View() string {
 	case WaitChordState:
 		return m.chordKindList.View()
 	case ShowState:
-		return m.getChordView()
+		return getChordView(m.selectedNote, m.selectedChordKind)
 	}
 	return ""
 }
 
-func (m *Model) getChordView() string {
+func getChordView(tonic *model.Note, chordKind model.ChordKind) string {
 	var bf bytes.Buffer
-	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", m.selectedNote.GetName()))
-	table, functions := scale.Make(m.selectedNote)
-	chord := model.GetChord(m.selectedChordKind)
+	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", tonic.GetName()))
+	table, functions := scale.Make(tonic)
+	chord := model.GetChord(chordKind)
 	notes := model.GetChordNotes(chord, functions)
 	bf.WriteString(table)
 	bf.WriteString("\n\n")
-	bf.WriteString(fmt.Sprintf("Symbol: %v\n", chord.GetSymbol(m.selectedNote)))
+	bf.WriteString(fmt.Sprintf("Symbol: %v\n", chord.GetSymbol(tonic)))
 	bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
 	bf.WriteString(fmt.Sprintf("Notes: %v\n", notesToView(notes)))
 	bf.WriteString(fmt.Sprintf("Intervals: %v\n", notesWithIntervalToView(notes)))

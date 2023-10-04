@@ -20,6 +20,13 @@ const (
 	QuittingState
 )
 
+const (
+	KeyCtrlC = "ctrl+c"
+	KeyUp    = "up"
+	KeyDown  = "down"
+	KeyEnter = "enter"
+)
+
 type Model struct {
 	noteList      list.Model
 	chordKindList list.Model
@@ -41,24 +48,24 @@ func (m *Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch keypress := msg.String(); keypress {
-		case "ctrl+c":
+		switch key := msg.String(); key {
+		case KeyCtrlC:
 			return m, tea.Quit
-		case "up":
+		case KeyUp:
 			switch m.state {
 			case WaitNoteState:
 				m.noteList.CursorUp()
 			case WaitChordState:
 				m.chordKindList.CursorUp()
 			}
-		case "down":
+		case KeyDown:
 			switch m.state {
 			case WaitNoteState:
 				m.noteList.CursorDown()
 			case WaitChordState:
 				m.chordKindList.CursorDown()
 			}
-		case "enter":
+		case KeyEnter:
 			switch m.state {
 			case WaitNoteState:
 				m.selectedNote = m.noteList.SelectedItem().(*model.Note)

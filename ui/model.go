@@ -150,11 +150,11 @@ func (m *Model) View() string {
 }
 
 func (m *Model) headerView() string {
-	return titleStyle.Render(m.headerText)
+	return titleStyle.Render("🎹" + m.headerText)
 }
 
 func (m *Model) footerView() string {
-	return infoStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
+	return infoStyle.Render(fmt.Sprintf("📋%3.f%%", m.viewport.ScrollPercent()*100))
 }
 
 func getAllChordsView(tonic *model.Note) string {

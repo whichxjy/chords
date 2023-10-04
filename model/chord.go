@@ -11,6 +11,7 @@ const (
 	DominantSeventhChordKind
 	MinorSeventhChordKind
 	MinorMajorSeventhChordKind
+	HalfDiminishedSeventhChordKind
 )
 
 func (k ChordKind) String() string {
@@ -24,13 +25,15 @@ func (k ChordKind) String() string {
 	case Sus4ChordKind:
 		return "Sus4"
 	case MajorSeventhChordKind:
-		return "Major Seventh"
+		return "Major seventh"
 	case DominantSeventhChordKind:
-		return "Dominant Seventh"
+		return "Dominant seventh"
 	case MinorSeventhChordKind:
-		return "Minor Seventh"
+		return "Minor seventh"
 	case MinorMajorSeventhChordKind:
-		return "Minor Major Seventh"
+		return "Minor major seventh"
+	case HalfDiminishedSeventhChordKind:
+		return "Half-diminished seventh"
 	}
 	return "-"
 }
@@ -40,14 +43,15 @@ func (k ChordKind) FilterValue() string {
 }
 
 var Chords = map[ChordKind]Chord{
-	MajorChordKind:             &MajorChord{},
-	MinorChordKind:             &MinorChord{},
-	Sus2ChordKind:              &Sus2Chord{},
-	Sus4ChordKind:              &Sus4Chord{},
-	MajorSeventhChordKind:      &MajorSeventhChord{},
-	DominantSeventhChordKind:   &DominantSeventhChord{},
-	MinorSeventhChordKind:      &MinorSeventhChord{},
-	MinorMajorSeventhChordKind: &MinorMajorSeventhChord{},
+	MajorChordKind:                 &MajorChord{},
+	MinorChordKind:                 &MinorChord{},
+	Sus2ChordKind:                  &Sus2Chord{},
+	Sus4ChordKind:                  &Sus4Chord{},
+	MajorSeventhChordKind:          &MajorSeventhChord{},
+	DominantSeventhChordKind:       &DominantSeventhChord{},
+	MinorSeventhChordKind:          &MinorSeventhChord{},
+	MinorMajorSeventhChordKind:     &MinorMajorSeventhChord{},
+	HalfDiminishedSeventhChordKind: &HalfDiminishedSeventhChord{},
 }
 
 func GetChord(kind ChordKind) Chord {
@@ -208,4 +212,22 @@ func (c *MinorMajorSeventhChord) Pick(functions []*Note) []*Note {
 
 func (c *MinorMajorSeventhChord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1].Flat(), notes[2], notes[3]}
+}
+
+type HalfDiminishedSeventhChord struct{}
+
+func (c *HalfDiminishedSeventhChord) GetSymbol(note *Note) string {
+	return note.GetName() + "m7b5"
+}
+
+func (c *HalfDiminishedSeventhChord) Description() string {
+	return "1 - b3 - b5 - b7"
+}
+
+func (c *HalfDiminishedSeventhChord) Pick(functions []*Note) []*Note {
+	return []*Note{functions[0], functions[2], functions[4], functions[6]}
+}
+
+func (c *HalfDiminishedSeventhChord) Convert(notes []*Note) []*Note {
+	return []*Note{notes[0], notes[1].Flat(), notes[2].Flat(), notes[3].Flat()}
 }

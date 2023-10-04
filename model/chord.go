@@ -5,6 +5,8 @@ type ChordKind int
 const (
 	MajorChordKind ChordKind = iota
 	MinorChordKind
+	Sus2ChordKind
+	Sus4ChordKind
 )
 
 func (k ChordKind) String() string {
@@ -13,6 +15,10 @@ func (k ChordKind) String() string {
 		return "Major"
 	case MinorChordKind:
 		return "Minor"
+	case Sus2ChordKind:
+		return "Sus2"
+	case Sus4ChordKind:
+		return "Sus4"
 	}
 	return "-"
 }
@@ -24,6 +30,8 @@ func (k ChordKind) FilterValue() string {
 var Chords = map[ChordKind]Chord{
 	MajorChordKind: &MajorChord{},
 	MinorChordKind: &MinorChord{},
+	Sus2ChordKind:  &Sus2Chord{},
+	Sus4ChordKind:  &Sus4Chord{},
 }
 
 func GetChord(kind ChordKind) Chord {
@@ -76,4 +84,40 @@ func (c *MinorChord) Pick(functions []*Note) []*Note {
 
 func (c *MinorChord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1].Flat(), notes[2]}
+}
+
+type Sus2Chord struct{}
+
+func (c *Sus2Chord) GetSymbol(note *Note) string {
+	return note.GetName() + "sus2"
+}
+
+func (c *Sus2Chord) Description() string {
+	return "1 - 2 - 5"
+}
+
+func (c *Sus2Chord) Pick(functions []*Note) []*Note {
+	return []*Note{functions[0], functions[1], functions[4]}
+}
+
+func (c *Sus2Chord) Convert(notes []*Note) []*Note {
+	return []*Note{notes[0], notes[1], notes[2]}
+}
+
+type Sus4Chord struct{}
+
+func (c *Sus4Chord) GetSymbol(note *Note) string {
+	return note.GetName() + "sus4"
+}
+
+func (c *Sus4Chord) Description() string {
+	return "1 - 4 - 5"
+}
+
+func (c *Sus4Chord) Pick(functions []*Note) []*Note {
+	return []*Note{functions[0], functions[3], functions[4]}
+}
+
+func (c *Sus4Chord) Convert(notes []*Note) []*Note {
+	return []*Note{notes[0], notes[1], notes[2]}
 }

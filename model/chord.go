@@ -7,6 +7,7 @@ const (
 	MinorChordKind
 	Sus2ChordKind
 	Sus4ChordKind
+	MajorSeventhKind
 )
 
 func (k ChordKind) String() string {
@@ -19,6 +20,8 @@ func (k ChordKind) String() string {
 		return "Sus2"
 	case Sus4ChordKind:
 		return "Sus4"
+	case MajorSeventhKind:
+		return "Major Seventh"
 	}
 	return "-"
 }
@@ -28,10 +31,11 @@ func (k ChordKind) FilterValue() string {
 }
 
 var Chords = map[ChordKind]Chord{
-	MajorChordKind: &MajorChord{},
-	MinorChordKind: &MinorChord{},
-	Sus2ChordKind:  &Sus2Chord{},
-	Sus4ChordKind:  &Sus4Chord{},
+	MajorChordKind:   &MajorChord{},
+	MinorChordKind:   &MinorChord{},
+	Sus2ChordKind:    &Sus2Chord{},
+	Sus4ChordKind:    &Sus4Chord{},
+	MajorSeventhKind: &MajorSeventhChord{},
 }
 
 func GetChord(kind ChordKind) Chord {
@@ -120,4 +124,22 @@ func (c *Sus4Chord) Pick(functions []*Note) []*Note {
 
 func (c *Sus4Chord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1], notes[2]}
+}
+
+type MajorSeventhChord struct{}
+
+func (c *MajorSeventhChord) GetSymbol(note *Note) string {
+	return note.GetName() + "maj7"
+}
+
+func (c *MajorSeventhChord) Description() string {
+	return "1 - 3 - 5 - 7"
+}
+
+func (c *MajorSeventhChord) Pick(functions []*Note) []*Note {
+	return []*Note{functions[0], functions[2], functions[4], functions[6]}
+}
+
+func (c *MajorSeventhChord) Convert(notes []*Note) []*Note {
+	return []*Note{notes[0], notes[1], notes[2], notes[3]}
 }

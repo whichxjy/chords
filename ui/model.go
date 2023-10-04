@@ -17,7 +17,7 @@ import (
 type State int
 
 const (
-	WaitNoteState State = iota
+	WaitTonicState State = iota
 	WaitChordState
 	ShowState
 	QuittingState
@@ -35,8 +35,8 @@ type Model struct {
 
 	viewReady bool
 	// list to select tonic
-	noteList     list.Model
-	selectedNote *model.Note
+	noteList      list.Model
+	selectedTonic *model.Note
 	// list to select chord kind
 	chordKindList list.Model
 	// list of notes
@@ -45,7 +45,7 @@ type Model struct {
 }
 
 func (m *Model) Init() tea.Cmd {
-	m.state = WaitNoteState
+	m.state = WaitTonicState
 	return nil
 }
 
@@ -67,15 +67,15 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 	}
 
 	switch m.state {
-	case WaitNoteState:
+	case WaitTonicState:
 		switch key {
 		case KeyUp:
 			m.noteList.CursorUp()
 		case KeyDown:
 			m.noteList.CursorDown()
 		case KeyEnter:
-			m.selectedNote = m.noteList.SelectedItem().(*model.Note)
-			m.onTonicSelected(m.selectedNote)
+			m.selectedTonic = m.noteList.SelectedItem().(*model.Note)
+			m.onTonicSelected(m.selectedTonic)
 			m.state = WaitChordState
 		}
 	case WaitChordState:
@@ -94,7 +94,7 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 		case KeyEnter:
 			m.noteList.ResetSelected()
 			m.chordKindList.ResetSelected()
-			m.state = WaitNoteState
+			m.state = WaitTonicState
 		default:
 			// Let viewport to handle message
 			var cmd tea.Cmd
@@ -130,7 +130,7 @@ func (m *Model) View() string {
 	}
 
 	switch m.state {
-	case WaitNoteState:
+	case WaitTonicState:
 		return m.noteList.View()
 	case WaitChordState:
 		return m.chordKindList.View()
@@ -161,9 +161,9 @@ func (m *Model) footerView() string {
 
 func (m *Model) viewportView(chordKind model.ChordKind) (string, string) {
 	if chordKind == model.AllChorsKind {
-		return "Chords", getAllChordsView(m.selectedNote)
+		return "Chords", getAllChordsView(m.selectedTonic)
 	}
-	return "Chord", getSingleChordView(m.selectedNote, chordKind)
+	return "Chord", getSingleChordView(m.selectedTonic, chordKind)
 }
 
 func (m *Model) resetViewportYPosition() {

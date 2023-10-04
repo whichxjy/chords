@@ -32,13 +32,13 @@ var (
 func newNoteList(width, height int) list.Model {
 	noteList := list.New(getNoteListForUI(), noteDelegate{}, width, height)
 	noteList.Title = "🎹Choose the tonic"
-	setListStyle(&noteList)
+	initList(&noteList)
 	return noteList
 }
 
 func newChordKindList(width, height int) list.Model {
 	chordKindList := list.New(getChordKindListForUI(), chordDelegate{}, width, height)
-	setListStyle(&chordKindList)
+	initList(&chordKindList)
 	return chordKindList
 }
 
@@ -63,9 +63,10 @@ func getChordKindListForUI() []list.Item {
 	return xs
 }
 
-func setListStyle(l *list.Model) {
+func initList(l *list.Model) {
 	l.Styles.Title = l.Styles.Title.Background(backgroundColor)
 	l.SetShowHelp(false)
+	l.InfiniteScrolling = true
 }
 
 type listDelegate struct{}

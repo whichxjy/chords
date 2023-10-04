@@ -11,6 +11,7 @@ import (
 	"github.com/whichxjy/chords/scale"
 )
 
+// WaitNoteState -> WaitChordState -> ShowState -> WaitNoteState
 type State int
 
 const (

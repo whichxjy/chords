@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/whichxjy/chords/model"
 	"github.com/whichxjy/chords/scale"
 )
@@ -37,6 +39,9 @@ type Model struct {
 
 	selectedNote      *model.Note
 	selectedChordKind model.ChordKind
+
+	viewport      viewport.Model
+	viewportReady bool
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -47,6 +52,32 @@ func (m *Model) Init() tea.Cmd {
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		if msg.String() == KeyCtrlC {
+			return m, tea.Quit
+		}
+	case tea.WindowSizeMsg:
+		headerHeight := lipgloss.Height(m.headerView())
+		footerHeight := lipgloss.Height(m.footerView())
+		verticalMarginHeight := headerHeight + footerHeight
+		if !m.viewportReady {
+			m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
+			m.viewport.YPosition = headerHeight
+			m.viewport.SetContent("")
+			m.viewportReady = true
+		} else {
+			m.viewport.Width = msg.Width
+			m.viewport.Height = msg.Height - verticalMarginHeight
+		}
+	}
+
+	if m.state == ShowState {
+		var cmd tea.Cmd
+		m.viewport, cmd = m.viewport.Update(msg)
+		return m, cmd
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		return m, m.onKeyPressed(msg.String())
@@ -82,6 +113,11 @@ func (m *Model) onKeyPressed(key string) tea.Cmd {
 			m.chordKindList.CursorDown()
 		case KeyEnter:
 			m.selectedChordKind = m.chordKindList.SelectedItem().(model.ChordKind)
+			if m.selectedChordKind == model.AllChorsKind {
+				m.viewport.SetContent(getAllChordsView(m.selectedNote))
+			} else {
+				m.viewport.SetContent(getSingleChordView(m.selectedNote, m.selectedChordKind))
+			}
 			m.state = ShowState
 		}
 	case ShowState:
@@ -102,18 +138,28 @@ func (m *Model) View() string {
 	case WaitChordState:
 		return m.chordKindList.View()
 	case ShowState:
-		if m.selectedChordKind == model.AllChorsKind {
-			return getAllChordsView(m.selectedNote)
-		}
-		return getSingleChordView(m.selectedNote, m.selectedChordKind)
+		return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.viewport.View(), m.footerView())
 	}
 	return ""
+}
+
+func (m *Model) headerView() string {
+	title := titleStyle.Render("Chord")
+	line := strings.Repeat("─", max(0, m.viewport.Width-lipgloss.Width(title)))
+	return lipgloss.JoinHorizontal(lipgloss.Center, title, line)
+}
+
+func (m *Model) footerView() string {
+	info := infoStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
+	line := strings.Repeat("─", max(0, m.viewport.Width-lipgloss.Width(info)))
+	return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
 }
 
 func getAllChordsView(tonic *model.Note) string {
 	var bf bytes.Buffer
 	tableView, functions := getScaleTableView(tonic)
 	bf.WriteString(tableView)
+	bf.WriteString("\n\n")
 	for chordKind := range model.ChordKinds {
 		bf.WriteString(getChordDetailView(tonic, chordKind, functions))
 		bf.WriteString("\n")
@@ -125,6 +171,7 @@ func getSingleChordView(tonic *model.Note, chordKind model.ChordKind) string {
 	var bf bytes.Buffer
 	tableView, functions := getScaleTableView(tonic)
 	bf.WriteString(tableView)
+	bf.WriteString("\n\n")
 	chordView := getChordDetailView(tonic, chordKind, functions)
 	bf.WriteString(chordView)
 	return bf.String()
@@ -170,4 +217,11 @@ func notesWithIntervalToView(notes []*model.Note) string {
 		}
 	}
 	return strings.Join(strs, " - ")
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }

@@ -42,6 +42,7 @@ type Model struct {
 
 	viewport      viewport.Model
 	viewportReady bool
+	headerText    string
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -61,6 +62,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		headerHeight := lipgloss.Height(m.headerView())
 		footerHeight := lipgloss.Height(m.footerView())
 		verticalMarginHeight := headerHeight + footerHeight
+
 		if !m.viewportReady {
 			m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
 			m.viewport.YPosition = headerHeight
@@ -115,8 +117,10 @@ func (m *Model) onKeyPressed(key string) tea.Cmd {
 			m.selectedChordKind = m.chordKindList.SelectedItem().(model.ChordKind)
 			if m.selectedChordKind == model.AllChorsKind {
 				m.viewport.SetContent(getAllChordsView(m.selectedNote))
+				m.headerText = "Chords"
 			} else {
 				m.viewport.SetContent(getSingleChordView(m.selectedNote, m.selectedChordKind))
+				m.headerText = "Chord"
 			}
 			m.state = ShowState
 		}
@@ -138,21 +142,19 @@ func (m *Model) View() string {
 	case WaitChordState:
 		return m.chordKindList.View()
 	case ShowState:
-		return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.viewport.View(), m.footerView())
+		if m.viewportReady {
+			return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.viewport.View(), m.footerView())
+		}
 	}
 	return ""
 }
 
 func (m *Model) headerView() string {
-	title := titleStyle.Render("Chord")
-	line := strings.Repeat("─", max(0, m.viewport.Width-lipgloss.Width(title)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, title, line)
+	return titleStyle.Render(m.headerText)
 }
 
 func (m *Model) footerView() string {
-	info := infoStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
-	line := strings.Repeat("─", max(0, m.viewport.Width-lipgloss.Width(info)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
+	return infoStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
 }
 
 func getAllChordsView(tonic *model.Note) string {

@@ -18,22 +18,18 @@ const (
 )
 
 var (
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
-)
-
-var (
-	titleStyle = func() lipgloss.Style {
-		b := lipgloss.RoundedBorder()
-		b.Right = "├"
-		return lipgloss.NewStyle().BorderStyle(b).Padding(0, 1)
-	}()
-
-	infoStyle = func() lipgloss.Style {
-		b := lipgloss.RoundedBorder()
-		b.Left = "┤"
-		return titleStyle.Copy().BorderStyle(b)
-	}()
+	// List
+	notSelectedStyle = lipgloss.NewStyle().
+				PaddingLeft(4)
+	selectedStyle = lipgloss.NewStyle().
+			PaddingLeft(2).
+			Foreground(lipgloss.Color("170"))
+	// Display
+	titleStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("#FAFAFA")).
+			Background(lipgloss.Color("#7D56F4"))
+	infoStyle = titleStyle.Copy()
 )
 
 func getNoteListForUI() []list.Item {
@@ -76,10 +72,10 @@ func (nd noteDelegate) Render(w io.Writer, m list.Model, index int, listItem lis
 
 	str := fmt.Sprintf("[%02d] %v", index+1, note.GetName())
 
-	fn := itemStyle.Render
+	fn := notSelectedStyle.Render
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+			return selectedStyle.Render("> " + strings.Join(s, " "))
 		}
 	}
 
@@ -98,10 +94,10 @@ func (cd chordDelegate) Render(w io.Writer, m list.Model, index int, listItem li
 
 	str := fmt.Sprintf("[%02d] %v", index+1, chordKind.String())
 
-	fn := itemStyle.Render
+	fn := notSelectedStyle.Render
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+			return selectedStyle.Render("> " + strings.Join(s, " "))
 		}
 	}
 

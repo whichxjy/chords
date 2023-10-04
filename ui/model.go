@@ -55,43 +55,16 @@ func (m *Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if msg.String() == KeyCtrlC {
-			return m, tea.Quit
-		}
+		return m, m.onKeyMsg(msg)
 	case tea.WindowSizeMsg:
-		headerHeight := lipgloss.Height(m.headerView())
-		footerHeight := lipgloss.Height(m.footerView())
-		verticalMarginHeight := headerHeight + footerHeight
-
-		if !m.viewportReady {
-			m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
-			m.viewport.YPosition = headerHeight
-			m.viewport.SetContent("")
-			m.viewportReady = true
-		} else {
-			m.viewport.Width = msg.Width
-			m.viewport.Height = msg.Height - verticalMarginHeight
-		}
-	}
-
-	if m.state == ShowState {
-		var cmd tea.Cmd
-		m.viewport, cmd = m.viewport.Update(msg)
-		return m, cmd
-	}
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		return m, m.onKeyPressed(msg.String())
-	case tea.WindowSizeMsg:
-		m.noteList.SetWidth(msg.Width)
-		m.chordKindList.SetWidth(msg.Width)
+		m.onWindowSizeMsg(msg)
 		return m, nil
 	}
 	return m, nil
 }
 
-func (m *Model) onKeyPressed(key string) tea.Cmd {
+func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
+	key := msg.String()
 	if key == KeyCtrlC {
 		return tea.Quit
 	}
@@ -130,9 +103,31 @@ func (m *Model) onKeyPressed(key string) tea.Cmd {
 			m.noteList.ResetSelected()
 			m.chordKindList.ResetSelected()
 			m.state = WaitNoteState
+		default:
+			// Let viewport to handle message
+			var cmd tea.Cmd
+			m.viewport, cmd = m.viewport.Update(msg)
+			return cmd
 		}
 	}
 	return nil
+}
+
+func (m *Model) onWindowSizeMsg(msg tea.WindowSizeMsg) {
+	m.noteList.SetWidth(msg.Width)
+	m.chordKindList.SetWidth(msg.Width)
+
+	headerHeight := lipgloss.Height(m.headerView())
+	footerHeight := lipgloss.Height(m.footerView())
+	verticalMarginHeight := headerHeight + footerHeight
+	if !m.viewportReady {
+		m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
+		m.viewport.YPosition = headerHeight
+		m.viewportReady = true
+	} else {
+		m.viewport.Width = msg.Width
+		m.viewport.Height = msg.Height - verticalMarginHeight
+	}
 }
 
 func (m *Model) View() string {

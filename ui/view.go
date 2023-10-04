@@ -11,11 +11,6 @@ import (
 	"github.com/whichxjy/chords/model"
 )
 
-const (
-	listWidth  int = 40
-	listHeight int = 20
-)
-
 var (
 	// Colors
 	backgroundColor = lipgloss.Color("#107896")
@@ -34,15 +29,15 @@ var (
 	infoStyle = titleStyle.Copy()
 )
 
-func newNoteList() list.Model {
-	noteList := list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
+func newNoteList(width, height int) list.Model {
+	noteList := list.New(getNoteListForUI(), noteDelegate{}, width, height)
 	noteList.Title = "🎹Choose the tonic"
 	setListStyle(&noteList)
 	return noteList
 }
 
-func newChordKindList() list.Model {
-	chordKindList := list.New(getChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
+func newChordKindList(width, height int) list.Model {
+	chordKindList := list.New(getChordKindListForUI(), chordDelegate{}, width, height)
 	setListStyle(&chordKindList)
 	return chordKindList
 }

@@ -31,24 +31,20 @@ const (
 )
 
 type Model struct {
-	noteList      list.Model
-	chordKindList list.Model
+	state State
 
-	state  State
-	cursor int
-
+	viewReady bool
+	// list to select tonic
+	noteList     list.Model
 	selectedNote *model.Note
-
-	viewport      viewport.Model
-	viewportReady bool
-	headerText    string
+	// list to select chord kind
+	chordKindList list.Model
+	// list of notes
+	headerText string
+	viewport   viewport.Model
 }
 
 func (m *Model) Init() tea.Cmd {
-	// Init list
-	m.noteList = newNoteList()
-	m.chordKindList = newChordKindList()
-	// Init state
 	m.state = WaitNoteState
 	return nil
 }
@@ -110,34 +106,36 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 }
 
 func (m *Model) onWindowSizeMsg(msg tea.WindowSizeMsg) {
-	m.noteList.SetWidth(msg.Width)
-	m.noteList.SetHeight(msg.Height)
-	m.chordKindList.SetWidth(msg.Width)
-	m.chordKindList.SetHeight(msg.Height)
-
 	headerHeight := lipgloss.Height(m.headerView())
 	footerHeight := lipgloss.Height(m.footerView())
-	verticalMarginHeight := headerHeight + footerHeight
-	if !m.viewportReady {
-		m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
-		m.viewport.YPosition = headerHeight
-		m.viewportReady = true
+	viewportHeight := msg.Height - (headerHeight + footerHeight)
+
+	if !m.viewReady {
+		m.noteList = newNoteList(msg.Width, msg.Height)
+		m.chordKindList = newChordKindList(msg.Width, msg.Height)
+		m.viewport = viewport.New(msg.Width, viewportHeight)
+		m.resetViewportYPosition()
+		m.viewReady = true
 	} else {
+		m.noteList.SetSize(msg.Width, msg.Height)
+		m.chordKindList.SetSize(msg.Width, msg.Height)
 		m.viewport.Width = msg.Width
-		m.viewport.Height = msg.Height - verticalMarginHeight
+		m.viewport.Height = viewportHeight
 	}
 }
 
 func (m *Model) View() string {
+	if !m.viewReady {
+		return ""
+	}
+
 	switch m.state {
 	case WaitNoteState:
 		return m.noteList.View()
 	case WaitChordState:
 		return m.chordKindList.View()
 	case ShowState:
-		if m.viewportReady {
-			return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.viewport.View(), m.footerView())
-		}
+		return fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.viewport.View(), m.footerView())
 	}
 	return ""
 }
@@ -147,13 +145,10 @@ func (m *Model) onTonicSelected(tonic *model.Note) {
 }
 
 func (m *Model) onChordKindSelected(chordKind model.ChordKind) {
-	if chordKind == model.AllChorsKind {
-		m.viewport.SetContent(getAllChordsView(m.selectedNote))
-		m.headerText = "Chords"
-	} else {
-		m.viewport.SetContent(getSingleChordView(m.selectedNote, chordKind))
-		m.headerText = "Chord"
-	}
+	header, content := m.viewportView(chordKind)
+	m.headerText = header
+	m.viewport.SetContent(content)
+	m.resetViewportYPosition()
 }
 
 func (m *Model) headerView() string {
@@ -162,6 +157,18 @@ func (m *Model) headerView() string {
 
 func (m *Model) footerView() string {
 	return infoStyle.Render(fmt.Sprintf("📋%3.f%%", m.viewport.ScrollPercent()*100))
+}
+
+func (m *Model) viewportView(chordKind model.ChordKind) (string, string) {
+	if chordKind == model.AllChorsKind {
+		return "Chords", getAllChordsView(m.selectedNote)
+	}
+	return "Chord", getSingleChordView(m.selectedNote, chordKind)
+}
+
+func (m *Model) resetViewportYPosition() {
+	headerHeight := lipgloss.Height(m.headerView())
+	m.viewport.YOffset = headerHeight - 1
 }
 
 func getAllChordsView(tonic *model.Note) string {

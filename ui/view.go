@@ -31,8 +31,9 @@ func getNoteListForUI() []list.Item {
 }
 
 func getChordKindListForUI() []list.Item {
-	xs := make([]list.Item, 0, len(model.Chords))
-	for c := range model.Chords {
+	xs := make([]list.Item, 0, len(model.ChordKinds)+1)
+	xs = append(xs, model.AllChorsKind)
+	for c := range model.ChordKinds {
 		xs = append(xs, c)
 	}
 	sort.Slice(xs, func(i, j int) bool {

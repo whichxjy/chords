@@ -101,19 +101,46 @@ func (m *Model) View() string {
 	case WaitChordState:
 		return m.chordKindList.View()
 	case ShowState:
-		return getChordView(m.selectedNote, m.selectedChordKind)
+		if m.selectedChordKind == model.AllChorsKind {
+			return getAllChordsView(m.selectedNote)
+		}
+		return getSingleChordView(m.selectedNote, m.selectedChordKind)
 	}
 	return ""
 }
 
-func getChordView(tonic *model.Note, chordKind model.ChordKind) string {
+func getAllChordsView(tonic *model.Note) string {
 	var bf bytes.Buffer
-	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", tonic.GetName()))
+	tableView, functions := getScaleTableView(tonic)
+	bf.WriteString(tableView)
+	for chordKind := range model.ChordKinds {
+		bf.WriteString(getChordDetailView(tonic, chordKind, functions))
+		bf.WriteString("\n")
+	}
+	return bf.String()
+}
+
+func getSingleChordView(tonic *model.Note, chordKind model.ChordKind) string {
+	var bf bytes.Buffer
+	tableView, functions := getScaleTableView(tonic)
+	bf.WriteString(tableView)
+	chordView := getChordDetailView(tonic, chordKind, functions)
+	bf.WriteString(chordView)
+	return bf.String()
+}
+
+func getScaleTableView(tonic *model.Note) (string, []*model.Note) {
+	var bf bytes.Buffer
 	table, functions := scale.Make(tonic)
+	bf.WriteString(fmt.Sprintf("%s Major Scale:\n", tonic.GetName()))
+	bf.WriteString(table)
+	return bf.String(), functions
+}
+
+func getChordDetailView(tonic *model.Note, chordKind model.ChordKind, functions []*model.Note) string {
+	var bf bytes.Buffer
 	chord := model.GetChord(chordKind)
 	notes := model.GetChordNotes(chord, functions)
-	bf.WriteString(table)
-	bf.WriteString("\n\n")
 	bf.WriteString(fmt.Sprintf("Symbol: %v\n", chord.GetSymbol(tonic)))
 	bf.WriteString(fmt.Sprintf("Chord: %v\n", chord.Description()))
 	bf.WriteString(fmt.Sprintf("Notes: %v\n", notesToView(notes)))

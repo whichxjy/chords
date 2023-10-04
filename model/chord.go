@@ -3,7 +3,8 @@ package model
 type ChordKind int
 
 const (
-	MajorChordKind ChordKind = iota
+	AllChorsKind ChordKind = iota
+	MajorChordKind
 	MinorChordKind
 	Sus2ChordKind
 	Sus4ChordKind
@@ -16,6 +17,8 @@ const (
 
 func (k ChordKind) String() string {
 	switch k {
+	case AllChorsKind:
+		return "All"
 	case MajorChordKind:
 		return "Major"
 	case MinorChordKind:
@@ -42,7 +45,7 @@ func (k ChordKind) FilterValue() string {
 	return k.String()
 }
 
-var Chords = map[ChordKind]Chord{
+var ChordKinds = map[ChordKind]Chord{
 	MajorChordKind:                 &MajorChord{},
 	MinorChordKind:                 &MinorChord{},
 	Sus2ChordKind:                  &Sus2Chord{},
@@ -55,7 +58,7 @@ var Chords = map[ChordKind]Chord{
 }
 
 func GetChord(kind ChordKind) Chord {
-	return Chords[kind]
+	return ChordKinds[kind]
 }
 
 func GetChordNotes(chord Chord, functions []*Note) []*Note {

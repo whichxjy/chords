@@ -90,13 +90,7 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 			m.chordKindList.CursorDown()
 		case KeyEnter:
 			selectedChordKind := m.chordKindList.SelectedItem().(model.ChordKind)
-			if selectedChordKind == model.AllChorsKind {
-				m.viewport.SetContent(getAllChordsView(m.selectedNote))
-				m.headerText = "Chords"
-			} else {
-				m.viewport.SetContent(getSingleChordView(m.selectedNote, selectedChordKind))
-				m.headerText = "Chord"
-			}
+			m.onChordKindSelected(selectedChordKind)
 			m.state = ShowState
 		}
 	case ShowState:
@@ -148,6 +142,16 @@ func (m *Model) View() string {
 
 func (m *Model) onTonicSelected(tonic *model.Note) {
 	setChordKindListTitle(&m.chordKindList, tonic)
+}
+
+func (m *Model) onChordKindSelected(chordKind model.ChordKind) {
+	if chordKind == model.AllChorsKind {
+		m.viewport.SetContent(getAllChordsView(m.selectedNote))
+		m.headerText = "Chords"
+	} else {
+		m.viewport.SetContent(getSingleChordView(m.selectedNote, chordKind))
+		m.headerText = "Chord"
+	}
 }
 
 func (m *Model) headerView() string {

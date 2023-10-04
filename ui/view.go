@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"io"
-	"sort"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -43,12 +42,9 @@ func getNoteListForUI() []list.Item {
 func getChordKindListForUI() []list.Item {
 	xs := make([]list.Item, 0, len(model.ChordKinds)+1)
 	xs = append(xs, model.AllChorsKind)
-	for c := range model.ChordKinds {
-		xs = append(xs, c)
+	for _, chordKind := range model.OrderedChordKinds {
+		xs = append(xs, chordKind)
 	}
-	sort.Slice(xs, func(i, j int) bool {
-		return xs[i].(model.ChordKind) < xs[j].(model.ChordKind)
-	})
 	return xs
 }
 

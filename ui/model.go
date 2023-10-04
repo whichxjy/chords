@@ -157,7 +157,7 @@ func getAllChordsView(tonic *model.Note) string {
 	tableView, functions := getScaleTableView(tonic)
 	bf.WriteString(tableView)
 	bf.WriteString("\n\n")
-	for chordKind := range model.ChordKinds {
+	for _, chordKind := range model.OrderedChordKinds {
 		bf.WriteString(getChordDetailView(tonic, chordKind, functions))
 		bf.WriteString("\n")
 	}
@@ -214,11 +214,4 @@ func notesWithIntervalToView(notes []*model.Note) string {
 		}
 	}
 	return strings.Join(strs, " - ")
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }

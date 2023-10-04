@@ -1,5 +1,7 @@
 package model
 
+import "sort"
+
 type ChordKind int
 
 const (
@@ -45,17 +47,29 @@ func (k ChordKind) FilterValue() string {
 	return k.String()
 }
 
-var ChordKinds = map[ChordKind]Chord{
-	MajorChordKind:                 &MajorChord{},
-	MinorChordKind:                 &MinorChord{},
-	Sus2ChordKind:                  &Sus2Chord{},
-	Sus4ChordKind:                  &Sus4Chord{},
-	MajorSeventhChordKind:          &MajorSeventhChord{},
-	DominantSeventhChordKind:       &DominantSeventhChord{},
-	MinorSeventhChordKind:          &MinorSeventhChord{},
-	MinorMajorSeventhChordKind:     &MinorMajorSeventhChord{},
-	HalfDiminishedSeventhChordKind: &HalfDiminishedSeventhChord{},
-}
+var (
+	ChordKinds = map[ChordKind]Chord{
+		MajorChordKind:                 &MajorChord{},
+		MinorChordKind:                 &MinorChord{},
+		Sus2ChordKind:                  &Sus2Chord{},
+		Sus4ChordKind:                  &Sus4Chord{},
+		MajorSeventhChordKind:          &MajorSeventhChord{},
+		DominantSeventhChordKind:       &DominantSeventhChord{},
+		MinorSeventhChordKind:          &MinorSeventhChord{},
+		MinorMajorSeventhChordKind:     &MinorMajorSeventhChord{},
+		HalfDiminishedSeventhChordKind: &HalfDiminishedSeventhChord{},
+	}
+	OrderedChordKinds = func() []ChordKind {
+		xs := make([]ChordKind, 0, len(ChordKinds))
+		for c := range ChordKinds {
+			xs = append(xs, c)
+		}
+		sort.Slice(xs, func(i, j int) bool {
+			return xs[i] < xs[j]
+		})
+		return xs
+	}()
+)
 
 func GetChord(kind ChordKind) Chord {
 	return ChordKinds[kind]

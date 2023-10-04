@@ -48,43 +48,50 @@ func (m *Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch key := msg.String(); key {
-		case KeyCtrlC:
-			return m, tea.Quit
-		case KeyUp:
-			switch m.state {
-			case WaitNoteState:
-				m.noteList.CursorUp()
-			case WaitChordState:
-				m.chordKindList.CursorUp()
-			}
-		case KeyDown:
-			switch m.state {
-			case WaitNoteState:
-				m.noteList.CursorDown()
-			case WaitChordState:
-				m.chordKindList.CursorDown()
-			}
-		case KeyEnter:
-			switch m.state {
-			case WaitNoteState:
-				m.selectedNote = m.noteList.SelectedItem().(*model.Note)
-				m.state = WaitChordState
-			case WaitChordState:
-				m.selectedChordKind = m.chordKindList.SelectedItem().(model.ChordKind)
-				m.state = ShowState
-			case ShowState:
-				m.state = WaitNoteState
-				m.noteList.ResetSelected()
-				m.chordKindList.ResetSelected()
-			}
-		}
+		return m, m.onKeyPressed(msg.String())
 	case tea.WindowSizeMsg:
 		m.noteList.SetWidth(msg.Width)
 		m.chordKindList.SetWidth(msg.Width)
 		return m, nil
 	}
 	return m, nil
+}
+
+func (m *Model) onKeyPressed(key string) tea.Cmd {
+	if key == KeyCtrlC {
+		return tea.Quit
+	}
+
+	switch m.state {
+	case WaitNoteState:
+		switch key {
+		case KeyUp:
+			m.noteList.CursorUp()
+		case KeyDown:
+			m.noteList.CursorDown()
+		case KeyEnter:
+			m.selectedNote = m.noteList.SelectedItem().(*model.Note)
+			m.state = WaitChordState
+		}
+	case WaitChordState:
+		switch key {
+		case KeyUp:
+			m.chordKindList.CursorUp()
+		case KeyDown:
+			m.chordKindList.CursorDown()
+		case KeyEnter:
+			m.selectedChordKind = m.chordKindList.SelectedItem().(model.ChordKind)
+			m.state = ShowState
+		}
+	case ShowState:
+		switch key {
+		case KeyEnter:
+			m.noteList.ResetSelected()
+			m.chordKindList.ResetSelected()
+			m.state = WaitNoteState
+		}
+	}
+	return nil
 }
 
 func (m *Model) View() string {

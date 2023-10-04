@@ -111,7 +111,9 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 
 func (m *Model) onWindowSizeMsg(msg tea.WindowSizeMsg) {
 	m.noteList.SetWidth(msg.Width)
+	m.noteList.SetHeight(msg.Height)
 	m.chordKindList.SetWidth(msg.Width)
+	m.chordKindList.SetHeight(msg.Height)
 
 	headerHeight := lipgloss.Height(m.headerView())
 	footerHeight := lipgloss.Height(m.footerView())

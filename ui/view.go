@@ -13,7 +13,7 @@ import (
 
 const (
 	listWidth  int = 40
-	listHeight int = 14
+	listHeight int = 20
 )
 
 var (
@@ -70,6 +70,7 @@ func getChordKindListForUI() []list.Item {
 
 func setListStyle(l *list.Model) {
 	l.Styles.Title = l.Styles.Title.Background(backgroundColor)
+	l.SetShowHelp(false)
 }
 
 type listDelegate struct{}

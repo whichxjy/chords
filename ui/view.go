@@ -34,6 +34,20 @@ var (
 	infoStyle = titleStyle.Copy()
 )
 
+func newNoteList() list.Model {
+	noteList := list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
+	noteList.Title = "Choose the tonic"
+	setListStyle(noteList)
+	return noteList
+}
+
+func newChordKindList() list.Model {
+	chordKindList := list.New(getChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
+	chordKindList.Title = "Choose the chord"
+	setListStyle(chordKindList)
+	return chordKindList
+}
+
 func getNoteListForUI() []list.Item {
 	xs := make([]list.Item, 0, len(model.Notes))
 	for _, x := range model.Notes {

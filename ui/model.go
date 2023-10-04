@@ -37,8 +37,7 @@ type Model struct {
 	state  State
 	cursor int
 
-	selectedNote      *model.Note
-	selectedChordKind model.ChordKind
+	selectedNote *model.Note
 
 	viewport      viewport.Model
 	viewportReady bool
@@ -46,16 +45,9 @@ type Model struct {
 }
 
 func (m *Model) Init() tea.Cmd {
-	// Init note list
-	m.noteList = list.New(getNoteListForUI(), noteDelegate{}, listWidth, listHeight)
-	m.noteList.Title = "Choose the tonic"
-	setListStyle(m.noteList)
-
-	// Init chord kind list
-	m.chordKindList = list.New(getChordKindListForUI(), chordDelegate{}, listWidth, listHeight)
-	m.chordKindList.Title = "Choose the chord"
-	setListStyle(m.chordKindList)
-
+	// Init list
+	m.noteList = newNoteList()
+	m.chordKindList = newChordKindList()
 	// Init state
 	m.state = WaitNoteState
 	return nil
@@ -96,12 +88,12 @@ func (m *Model) onKeyMsg(msg tea.KeyMsg) tea.Cmd {
 		case KeyDown:
 			m.chordKindList.CursorDown()
 		case KeyEnter:
-			m.selectedChordKind = m.chordKindList.SelectedItem().(model.ChordKind)
-			if m.selectedChordKind == model.AllChorsKind {
+			selectedChordKind := m.chordKindList.SelectedItem().(model.ChordKind)
+			if selectedChordKind == model.AllChorsKind {
 				m.viewport.SetContent(getAllChordsView(m.selectedNote))
 				m.headerText = "Chords"
 			} else {
-				m.viewport.SetContent(getSingleChordView(m.selectedNote, m.selectedChordKind))
+				m.viewport.SetContent(getSingleChordView(m.selectedNote, selectedChordKind))
 				m.headerText = "Chord"
 			}
 			m.state = ShowState

@@ -8,6 +8,7 @@ const (
 	Sus2ChordKind
 	Sus4ChordKind
 	MajorSeventhKind
+	DominantSeventhKind
 	MinorSeventhKind
 )
 
@@ -23,6 +24,8 @@ func (k ChordKind) String() string {
 		return "Sus4"
 	case MajorSeventhKind:
 		return "Major Seventh"
+	case DominantSeventhKind:
+		return "Dominant Seventh"
 	case MinorSeventhKind:
 		return "Minor Seventh"
 	}
@@ -34,12 +37,13 @@ func (k ChordKind) FilterValue() string {
 }
 
 var Chords = map[ChordKind]Chord{
-	MajorChordKind:   &MajorChord{},
-	MinorChordKind:   &MinorChord{},
-	Sus2ChordKind:    &Sus2Chord{},
-	Sus4ChordKind:    &Sus4Chord{},
-	MajorSeventhKind: &MajorSeventhChord{},
-	MinorSeventhKind: &MinorSeventhChord{},
+	MajorChordKind:      &MajorChord{},
+	MinorChordKind:      &MinorChord{},
+	Sus2ChordKind:       &Sus2Chord{},
+	Sus4ChordKind:       &Sus4Chord{},
+	MajorSeventhKind:    &MajorSeventhChord{},
+	DominantSeventhKind: &DominantSeventhChord{},
+	MinorSeventhKind:    &MinorSeventhChord{},
 }
 
 func GetChord(kind ChordKind) Chord {
@@ -146,6 +150,24 @@ func (c *MajorSeventhChord) Pick(functions []*Note) []*Note {
 
 func (c *MajorSeventhChord) Convert(notes []*Note) []*Note {
 	return []*Note{notes[0], notes[1], notes[2], notes[3]}
+}
+
+type DominantSeventhChord struct{}
+
+func (c *DominantSeventhChord) GetSymbol(note *Note) string {
+	return note.GetName() + "7"
+}
+
+func (c *DominantSeventhChord) Description() string {
+	return "1 - 3 - 5 - b7"
+}
+
+func (c *DominantSeventhChord) Pick(functions []*Note) []*Note {
+	return []*Note{functions[0], functions[2], functions[4], functions[6]}
+}
+
+func (c *DominantSeventhChord) Convert(notes []*Note) []*Note {
+	return []*Note{notes[0], notes[1], notes[2], notes[3].Flat()}
 }
 
 type MinorSeventhChord struct{}

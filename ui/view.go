@@ -19,8 +19,9 @@ var (
 	notSelectedStyle = lipgloss.NewStyle().
 				PaddingLeft(4)
 	selectedStyle = lipgloss.NewStyle().
+			Bold(true).
 			PaddingLeft(2).
-			Foreground(backgroundColor)
+			Foreground(foregroundColor)
 	// Display
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
